@@ -1,6 +1,9 @@
-// import React, {useState} from 'react'
+import {useState} from 'react'
 
 const UploadImage = () => {
+    const [uploadedImage, setImage] = useState({});
+    const [isLoading, setLoading] = useState(false);
+
     const handleOnChange = async ({target}) => {
         const {files} = target;
         const data = new FormData();
@@ -12,7 +15,14 @@ const UploadImage = () => {
             body: data,
         })
 
-        console.log(res)
+        const { secure_url, eager } = await res.json();
+
+    setImage({
+      image: secure_url,
+      largeImage: eager[0].secure_url,
+    });
+
+    setLoading(false);
     }
 
   return (
@@ -29,6 +39,16 @@ const UploadImage = () => {
           />
         </label>
       </fieldset>
+      {isLoading && <p>Loading...</p>}
+        <div className="imageContainer">
+          {uploadedImage.image && (
+            <img src={uploadedImage.image} alt="Upload Preview" />
+          )}
+
+          {uploadedImage.largeImage && (
+            <img src={uploadedImage.largeImage} alt="Upload Preview" />
+          )}
+          </div>
     </div>
   );
 };
